@@ -1,0 +1,4 @@
+---
+ansible_ssh_user: odroid
+ansible_ssh_host: "10.17.1.181"
+ansible_become_password: "{{ lookup('community.general.bitwarden', 'cee50497-abb6-4e67-87a4-adaf011260db', search='id', field='password') | first }}"

@@ -1,0 +1,14 @@
+---
+argument_specs:
+  # roles/myapp/tasks/main.yml entry point
+  main:
+    short_description: The main entry point for the openvpn-client role.
+    options:
+      vpn_user:
+        type: "str"
+        required: true
+        description: "The vpn connection username"
+      vpn_password:
+        type: "str"
+        required: true
+        description: "The vpn connection password"

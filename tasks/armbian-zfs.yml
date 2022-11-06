@@ -1,0 +1,46 @@
+---
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+
+- name: Ensure headers are installed.
+  # Installs headers for each kernel, should only be 1 anyway
+  ansible.builtin.apt:
+    name: "{{ ansible_facts.packages[image_pkgname] |
+      map(attribute='version') |
+      map('regex_replace', '^', headers_pkgname~'=') |
+      list }}"
+    state: present
+    cache_valid_time: 3600
+  vars:
+    image_pkgname: "linux-image-{{ kernel_variant }}"
+    headers_pkgname: "linux-image-{{ kernel_variant }}"
+
+- name: Get held packages.
+  ansible.builtin.command:
+    cmd: apt-mark showhold | egrep "linux|armbian"
+  register: held_firmware_packages
+  changed_when: false
+
+- name: Ensure firmware versions are frozen.
+  ansible.builtin.command:
+    cmd: "/usr/sbin/armbian-config main=System selection=Freeze"
+  when: held_firmware_packages.stdout_lines | length < 6
+
+- name: Update packages.
+  ansible.builtin.apt:
+    upgrade: dist
+    force_apt_get: true # ensure use of apt-get as aptitude would ignore held packages
+
+- name: Ensure ZFS is installed.
+  ansible.builtin.apt:
+    name:
+      - zfs-dkms
+      - zfs-zed
+      - zfsutils-linux
+    state: present
+    autoremove: true
+
+- name: Ensure ZFS kernel module is loaded.
+  community.general.modprobe:
+    name: zfs
+    state: present

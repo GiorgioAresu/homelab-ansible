@@ -1,0 +1,19 @@
+---
+- name: Set up offsite backup on Odroid HC4.
+  hosts: odroidhc4
+  become: true
+
+  roles:
+    - role: openvpn-client
+      vpn_user: "{{ lookup('community.general.bitwarden', '14e212a1-423a-4fa3-9476-adbb016ffe35', search='id', field='username') | first }}"
+      vpn_password: "{{ lookup('community.general.bitwarden', '14e212a1-423a-4fa3-9476-adbb016ffe35', search='id', field='password') | first }}"
+    - role: chriswayg.msmtp-mailer
+
+  vars_files:
+    - vars/msmtp.yml
+
+  tasks:
+    - name: Ensure ZFS is installed.
+      ansible.builtin.import_tasks: tasks/armbian-zfs.yml
+      vars:
+        kernel_variant: edge-meson64

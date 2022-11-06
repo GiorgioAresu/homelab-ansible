@@ -1,0 +1,29 @@
+---
+- name: Ensure OpenVPN is installed.
+  ansible.builtin.apt:
+    name:
+      - openvpn
+    state: present
+    update_cache: true
+
+- name: Copy config.
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/openvpn/"
+    mode: 0644
+    owner: root
+    group: root
+  with_items: 
+    - files/home-tls.key
+    - files/home.conf
+    - files/home.p12
+  notify: restart_openvpn
+
+- name: Save credentials
+  ansible.builtin.template:
+    src: templates/.secrets.j2
+    dest: /etc/openvpn/.secrets
+    mode: 0600
+    owner: root
+    group: root
+  notify: restart_openvpn
