@@ -31,6 +31,16 @@
     upgrade: dist
     force_apt_get: true # ensure use of apt-get as aptitude would ignore held packages
 
+- name: Check if a reboot is required.
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: false
+  register: reboot_required_file
+
+- name: Reboot the server (if required).
+  ansible.builtin.reboot:
+  when: reboot_required_file.stat.exists
+
 - name: Ensure ZFS is installed.
   ansible.builtin.apt:
     name:

@@ -17,3 +17,18 @@
       ansible.builtin.import_tasks: tasks/armbian-zfs.yml
       vars:
         kernel_variant: edge-meson64
+
+    - name: Import zpool if available.
+      ansible.builtin.import_tasks: tasks/ensure-zpool.yml
+      vars:
+        pool_name: obox
+        properties:
+          ashift: "12"
+          autoexpand: "on"
+        filesystem_properties:
+          atime: "off"
+          compression: "lz4"
+        vdevs:
+          - mirror
+          - ata-WDC_WD30EFRX-68AX9N0_WD-WMC1T0638111
+          - ata-WDC_WD30EFRX-68EUZN0_WD-WMC4N0M5R0YP

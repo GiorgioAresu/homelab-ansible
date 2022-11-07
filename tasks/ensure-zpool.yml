@@ -1,0 +1,38 @@
+---
+- name: Assert config.
+  ansible.builtin.assert:
+    that:
+      - pool_name is defined
+      - create is not defined or create is ƒalse or (vdevs is mapping and vdevs is not mapping and vdevs is not string)
+      - properties is mapping or properties is not defined
+      - filesystem_properties is mapping or filesystem_properties is not defined
+
+- name: Gather zpool facts.
+  community.general.storage.zfs.zpool_facts:
+    name: "{{ pool_name }}"
+
+- name: Import zpool if available.
+  when: not (ansible_zfs_pools | selectattr('name', 'equalto', pool_name))
+  block:
+    - name: Look for importable pool.
+      ansible.builtin.command: "zpool import"
+      changed_when: false
+      register: pool_importable
+
+    - name: Ensure pool imported.
+      ansible.builtin.command:
+        cmd: "zpool import {{ pool_name }}"
+      when: "pool_importable.stdout is match('pool: ' + pool_name)"
+      register: pool_imported
+
+- name: Create pool if unavailable
+  when: pool_imported is skipped and (create|default(true)) is true
+  ansible.builtin.command:
+    cmd: >-
+      "zpool create
+      {{ (properties.items() | map('join', '=') | map('regex_replace', '^', '-o ') | join(' ')) if properties is defined }}
+      {{ (filesystem_properties.items() | map('join', '=') | map('regex_replace', '^', '-O ') | join(' ')) if filesystem_properties is defined }}
+      {{ ('-m '+mountpoint) if mountpoint is defined }}
+      {{ pool_name }}
+      {{ vdevs | join(' ') }}"
+    creates: "{{ mountpoint | default('/mnt/' + pool_name) }}"
