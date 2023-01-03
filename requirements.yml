@@ -2,6 +2,8 @@
 # http://docs.ansible.com/galaxy.html#installing-multiple-roles-from-a-file
 # Install with: `ansible-galaxy install -r requirements.yml`
 
-- name: chriswayg.msmtp-mailer
+roles:
+  - name: chriswayg.msmtp-mailer
 
-- name: community.general
+collections:
+  - name: community.general
