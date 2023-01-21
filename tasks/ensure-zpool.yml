@@ -3,12 +3,12 @@
   ansible.builtin.assert:
     that:
       - pool_name is defined
-      - create is not defined or create is ƒalse or (vdevs is mapping and vdevs is not mapping and vdevs is not string)
+      - create is not defined or not create or (vdevs is mapping and vdevs is not mapping and vdevs is not string)
       - properties is mapping or properties is not defined
       - filesystem_properties is mapping or filesystem_properties is not defined
 
 - name: Gather zpool facts.
-  community.general.storage.zfs.zpool_facts:
+  community.general.zpool_facts:
     name: "{{ pool_name }}"
 
 - name: Import zpool if available.
