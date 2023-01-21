@@ -32,3 +32,8 @@
           - mirror
           - ata-WDC_WD30EFRX-68AX9N0_WD-WMC1T0638111
           - ata-WDC_WD30EFRX-68EUZN0_WD-WMC4N0M5R0YP
+
+    - name: Ensure Avahi is installed, to advertise hostname with mDNS.
+      ansible.builtin.apt:
+        name: avahi-daemon
+        state: present
