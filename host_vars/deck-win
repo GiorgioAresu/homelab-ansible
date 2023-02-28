@@ -1,0 +1,4 @@
+---
+ansible_ssh_user: Giorgio
+ansible_ssh_host: deck
+ansible_shell_type: cmd

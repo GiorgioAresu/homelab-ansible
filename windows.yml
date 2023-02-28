@@ -1,0 +1,56 @@
+---
+- name: Set up Windows.
+  hosts: deck-win
+
+  tasks:
+    - name: Install all security, critical, and rollup updates.
+      ansible.windows.win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+
+    - name: Upgrade installed packages.
+      chocolatey.chocolatey.win_chocolatey:
+        name: all
+        state: latest
+
+    - name: Install packages.
+      chocolatey.chocolatey.win_chocolatey:
+        name: '{{ item }}'
+        state: present
+      with_items:
+        - autodesk-fusion360
+        - bitwarden
+        - brave
+        - docker-desktop
+        - etcher
+        - gimp
+        - git
+        - kubernetes-cli
+        - kubernetes-helm
+        - lazygit
+        - openvpn
+        - powertoys
+        - prusaslicer
+        - putty
+        - rufus
+        - sublimetext4
+        - sumatrapdf
+        - synctrayzor
+        - teamviewer-qs
+        - telegram
+        - vlc
+        - vscode
+        - winrar
+        - winscp
+
+    - name: Install WSL 2.
+      ansible.windows.win_optional_feature:
+        name: Microsoft-Windows-Subsystem-Linux
+        state: present
+      register: wsl_status
+
+    - name: Reboot if installing WSL requires it.
+      ansible.windows.win_reboot:
+      when: wsl_status.reboot_required

@@ -6,6 +6,7 @@ To use this, you need to setup:
 
 - Ansible Vault, save the key in `~/.ansible/vault_pass.txt`.  
 - [bitwarden-cli (bw)](https://github.com/bitwarden/clients/tree/master/apps/cli) installed and logged in.
+- Required galaxy modules, `ansible-galaxy install -r requirements.yml`.
 
 The playbook badges highlight compatibility with a device.
 
@@ -28,3 +29,13 @@ As a general guideline, you need to cross check 3 things:
 In Armbian, kernel versions are named by branch and not by version. It tends to be very old on *current* and very new on *edge*, but the issue with edge is that other packages might still be old.
 
 Once installed, the trick is to install the correct headers and then freeze the firmware to avoid ZFS breaking on the first kernel update. This is taken care of by the playbook.
+
+### Windows
+
+![playbook: windows.yml](https://img.shields.io/badge/playbook-windows.yml-brightgreen?style=flat&logo=ansible)
+
+Before starting you need to set up Windows to allow SSH connections:
+
+- Follow [https://www.layerstack.com/resources/tutorials/How-to-install-OpenSSH-on-Windows-Cloud-Servers](https://www.layerstack.com/resources/tutorials/How-to-install-OpenSSH-on-Windows-Cloud-Servers) to install end enable OpenSSH server
+- Manually copy the key you want to allow to `C:\ProgramData\ssh\administrators_authorized_keys` (you'll need to create the file).
+- Type from an admin PS `icacls.exe "C:\ProgramData\ssh\administrators_authorized_keys" /inheritance:r /grant "Administrators:F" /grant "SYSTEM:F"` to set up correct permissions to the file.
