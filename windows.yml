@@ -20,10 +20,10 @@
         name: '{{ item }}'
         state: present
       with_items:
-        - autodesk-fusion360
+        # - autodesk-fusion360
         - bitwarden
         - brave
-        - docker-desktop
+        # - docker-desktop
         - etcher
         - gimp
         - git
@@ -35,22 +35,20 @@
         - prusaslicer
         - putty
         - rufus
-        - sublimetext4
         - sumatrapdf
         - synctrayzor
-        - teamviewer-qs
         - telegram
         - vlc
         - vscode
         - winrar
         - winscp
 
-    - name: Install WSL 2.
-      ansible.windows.win_optional_feature:
-        name: Microsoft-Windows-Subsystem-Linux
-        state: present
-      register: wsl_status
+    # - name: Install WSL 2.
+    #   ansible.windows.win_optional_feature:
+    #     name: Microsoft-Windows-Subsystem-Linux
+    #     state: present
+    #   register: wsl_status
 
-    - name: Reboot if installing WSL requires it.
-      ansible.windows.win_reboot:
-      when: wsl_status.reboot_required
+    # - name: Reboot if installing WSL requires it.
+    #   ansible.windows.win_reboot:
+    #   when: wsl_status.reboot_required
